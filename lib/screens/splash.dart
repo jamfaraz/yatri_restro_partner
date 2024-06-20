@@ -4,7 +4,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:yatri_restro/screens/dashboard/dashboard.dart';
+import 'package:yatri_restro/screens/auth/signin_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,7 +18,7 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 3), () {
-      Get.offAll(() => const Dashboard());
+      Get.offAll(() => const SignInScreen());
     });
   }
 

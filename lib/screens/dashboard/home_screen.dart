@@ -3,6 +3,11 @@ import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:yatri_restro/screens/dashboard/notification_screen.dart';
+import 'package:yatri_restro/screens/dashboard/order_detail_screen.dart';
+import 'package:yatri_restro/widgets/forward_button.dart';
+
+import '../../widgets/drawer_widget.dart';
+import '../../widgets/tabbar_item.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -26,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      drawer: const DrawerWidget(),
       appBar: AppBar(
         title: Row(
           children: [
@@ -38,11 +44,11 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
         actions: [
           IconButton(
             onPressed: () {
-              Get.to(()=>const NotificationScreen());
+              Get.to(() => const NotificationScreen());
             },
             icon: const Icon(
               Icons.notifications,
-              color:  Color(0xff0E455D),
+              color: Color(0xff0E455D),
               size: 28,
             ),
           ),
@@ -62,7 +68,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
               width: Get.width,
               height: Get.height * .12,
               decoration: ShapeDecoration(
-                color: const Color(0xFFB65426),
+                color: const Color(0xff0E455D),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(7)),
               ),
@@ -89,15 +95,20 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                               ),
                             ),
                           ),
-                          Text(
-                            '350/-',
-                            style: GoogleFonts.kameron(
-                              textStyle: const TextStyle(
-                                color: Colors.white,
-                                fontSize: 20,
-                                fontWeight: FontWeight.w700,
+                          Row(
+                            children: [
+                              SvgPicture.asset('assets/currency.svg'),
+                              Text(
+                                '350/-',
+                                style: GoogleFonts.kameron(
+                                  textStyle: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 20,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
                               ),
-                            ),
+                            ],
                           )
                         ],
                       ),
@@ -133,74 +144,216 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
             const SizedBox(
               height: 22,
             ),
-            Container(
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: const Color(0xff0E455D),
-              ),
-              child: TabBar(
-                  dividerColor: Colors.transparent,
-                  labelPadding: EdgeInsets.zero,
-                  controller: tabController,
-                  indicatorColor: Colors.transparent,
-                  tabs: [
-                    TabBarItem(
-                      title: 'Confirmed',
-                      isSelected: tabController.index == 0,
-                      selectedColor: Colors.white,
-                    ),
-                    TabBarItem(
-                      title: 'Cooking',
-                      isSelected: tabController.index == 1,
-                      selectedColor: Colors.white,
-                    ),
-                    TabBarItem(
-                      title: 'Ready for handover',
-                      isSelected: tabController.index == 2,
-                      selectedColor: Colors.white,
-                    ),
-                  ]),
-            ),
+            TabBar(
+                dividerColor: Colors.transparent,
+                labelPadding: EdgeInsets.zero,
+                controller: tabController,
+                indicatorColor: Colors.transparent,
+                tabs: [
+                  TabBarItem(
+                    title: 'Active Orders',
+                    isSelected: tabController.index == 0,
+                    selectedColor: const Color(0xFFB65426),
+                  ),
+                  TabBarItem(
+                    title: 'Delivered Orders',
+                    isSelected: tabController.index == 1,
+                    selectedColor: const Color(0xFF06BF19),
+                  ),
+                  TabBarItem(
+                    title: 'Cancelled',
+                    isSelected: tabController.index == 2,
+                    selectedColor: const Color(0xFFDD072E),
+                  ),
+                ]),
+            Expanded(
+              child: TabBarView(controller: tabController, children: [
+                ListView.builder(
+                  padding: const EdgeInsets.only(top: 6),
+                  shrinkWrap: true,
+                  physics: const BouncingScrollPhysics(),
+                  itemCount: 6,
+                  itemBuilder: (context, index) {
+                    return Column(
+                      children: [
+                        Container(
+                          margin: const EdgeInsets.symmetric(vertical: 6),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 8, vertical: 12),
+                          decoration: ShapeDecoration(
+                            color: const Color(0xFFEFEFEF),
+                            shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(4)),
+                          ),
+                          child: Column(
+                            children: [
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Container(
+                                    height: Get.height * .021,
+                                    // width: Get.width*.4,
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 4),
+                                    decoration: ShapeDecoration(
+                                      color: const Color(0xFF08445C),
+                                      shape: RoundedRectangleBorder(
+                                          borderRadius:
+                                              BorderRadius.circular(3)),
+                                    ),
+                                    child: Text(
+                                      'Order id- #12345678',
+                                      style: GoogleFonts.kameron(
+                                        textStyle: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w700,
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  Column(
+                                    children: [
+                                      Text(
+                                        'Arrival time',
+                                        style: GoogleFonts.kameron(
+                                          textStyle: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        '07:35 PM',
+                                        style: GoogleFonts.kameron(
+                                          textStyle: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  )
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Text(
+                                    'Train no/Name-    ',
+                                    style: GoogleFonts.kameron(
+                                      textStyle: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ),
+                                  Text(
+                                    '02018- DEHRADUN SHT SPL',
+                                    style: GoogleFonts.kameron(
+                                      textStyle: const TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 12,
+                                        fontWeight: FontWeight.w400,
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceBetween,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Text(
+                                        'Total amount-    ',
+                                        style: GoogleFonts.kameron(
+                                          textStyle: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ),
+                                      Text(
+                                        '350/-',
+                                        style: GoogleFonts.kameron(
+                                          textStyle: const TextStyle(
+                                            color: Colors.black,
+                                            fontSize: 12,
+                                            fontWeight: FontWeight.w400,
+                                          ),
+                                        ),
+                                      ),
+                                      const SizedBox(
+                                        width: 14,
+                                      ),
+                                      Container(
+                                        width: Get.width * .16,
+                                        height: Get.height * .024,
+                                        decoration: ShapeDecoration(
+                                          color: const Color(0xFFB65426),
+                                          shape: RoundedRectangleBorder(
+                                              borderRadius:
+                                                  BorderRadius.circular(7)),
+                                        ),
+                                        child: Center(
+                                          child: Text(
+                                            'COD',
+                                            style: GoogleFonts.kameron(
+                                                textStyle: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 13,
+                                              fontWeight: FontWeight.w700,
+                                            )),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                  ForwardButton(
+                                    onTap: () {
+                                      Get.to(() => const OrderDetailScreen());
+                                    },
+                                  )
+                                ],
+                              )
+                            ],
+                          ),
+                        ),
+                      ],
+                    );
+                  },
+                ),
+                Center(
+                  child: Text(
+                    'There is no delivered order yet',
+                    style: GoogleFonts.kameron(
+                        textStyle: const TextStyle(
+                            color: Color(0xFF08445C),
+                            fontSize: 17,
+                            fontWeight: FontWeight.w500)),
+                  ),
+                ),
+                Center(
+                  child: Text(
+                    'There is no cancelled order yet',
+                    style: GoogleFonts.kameron(
+                        textStyle: const TextStyle(
+                            color: Color(0xFF08445C),
+                            fontSize: 17,
+                            fontWeight: FontWeight.w500)),
+                  ),
+                ),
+              ]),
+            )
           ],
         ),
       ),
     );
-  }
-}
-
-class TabBarItem extends StatelessWidget {
-  final String title;
-  final bool isSelected;
-  final Color selectedColor;
-
-  const TabBarItem({
-    super.key,
-    required this.title,
-    required this.isSelected,
-    required this.selectedColor,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        height: 42,
-        decoration: BoxDecoration(
-          color: isSelected ? selectedColor : null,
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 13, horizontal: 22),
-          child: Text(
-            title,
-            textAlign: TextAlign.center,
-            style: GoogleFonts.kameron(
-              textStyle: TextStyle(
-                color: isSelected ? Colors.black : Colors.white,
-                fontSize: 14,
-                fontWeight: FontWeight.w400,
-              ),
-            ),
-          ),
-        ));
   }
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:yatri_restro/screens/dashboard/drawer_screen.dart';
-import 'package:yatri_restro/screens/dashboard/my_requests_screen.dart';
+import 'package:yatri_restro/screens/dashboard/delivery_setting_screen.dart';
+import 'package:yatri_restro/screens/dashboard/order_detail_screen.dart';
 
 import 'home_screen.dart';
 
@@ -24,8 +24,8 @@ class _DashboardState extends State<Dashboard>
         index: selectedIndex,
         children: const [
           HomeScreen(),
-          MyRequestsScreen(),
-          DrawerScreen(),
+          OrderDetailScreen(),
+          DeliverySettingScreen()
         ],
       ),
       bottomNavigationBar: BottomNavigationBar(
