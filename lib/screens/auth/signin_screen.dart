@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:yatri_restro/screens/dashboard/dashboard.dart';
+import 'package:yatri_restro/controllers/login_controler.dart';
 import 'package:yatri_restro/widgets/primary_textfield.dart';
 
 class SignInScreen extends StatefulWidget {
@@ -14,6 +14,8 @@ class SignInScreen extends StatefulWidget {
 class _SignInScreenState extends State<SignInScreen> {
   TextEditingController emailControlle = TextEditingController();
   TextEditingController passwordControlle = TextEditingController();
+  LoginControler loginControler = Get.put(LoginControler());
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -39,8 +41,8 @@ class _SignInScreenState extends State<SignInScreen> {
                 ),
               ),
               Image.asset(
-                    'assets/login.jpg',
-                  ),
+                'assets/login.jpg',
+              ),
               Text(
                 'Welcome to Yatri Restro Food Service',
                 textAlign: TextAlign.center,
@@ -64,30 +66,43 @@ class _SignInScreenState extends State<SignInScreen> {
               const SizedBox(
                 height: 34,
               ),
-              InkWell(
-                onTap: () {
-                  Get.to(() => const Dashboard());
-                },
-                child: Container(
-                  width: Get.width * .38,
-                  height: Get.height * .05,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(44),
-                    color: const Color(0xFFB65426),
-                  ),
-                  child: Center(
-                    child: Text(
-                      'Login',
-                      style: GoogleFonts.kameron(
-                        textStyle: const TextStyle(
-                          color: Colors.white,
-                          fontSize: 22,
-                          fontWeight: FontWeight.w700,
+            
+              Obx(
+                () => loginControler.isLoading.value
+                    ? const CircularProgressIndicator(valueColor: AlwaysStoppedAnimation(Colors.white),)
+                    : InkWell(
+                        onTap: () {
+                          if (emailControlle.text.isEmpty ||
+                              passwordControlle.text.isEmpty) {
+                            Get.snackbar('Error', 'Please enter all fields',
+                                backgroundColor: Colors.green);
+                          } else {
+                            loginControler.logInService(
+                                email: emailControlle.text.toString(),
+                                password: passwordControlle.text.toString());
+                          }
+                        },
+                        child: Container(
+                          width: Get.width * .38,
+                          height: Get.height * .05,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(44),
+                            color: const Color(0xFFB65426),
+                          ),
+                          child: Center(
+                            child: Text(
+                              'Login',
+                              style: GoogleFonts.kameron(
+                                textStyle: const TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
               ),
               const SizedBox(
                 height: 12,
