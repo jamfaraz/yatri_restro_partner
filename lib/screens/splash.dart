@@ -4,7 +4,9 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yatri_restro/screens/auth/signin_screen.dart';
+import 'package:yatri_restro/screens/dashboard/dashboard.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -18,8 +20,18 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Timer(const Duration(seconds: 3), () {
-      Get.offAll(() => const SignInScreen());
+      _checkLoginStatus();
     });
+  }
+
+  _checkLoginStatus() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    bool isLoggedIn = prefs.getBool('isLoggedIn') ?? false;
+    if (isLoggedIn) {
+      Get.to(() => Dashboard());
+    } else {
+      Get.to(() => SignInScreen());
+    }
   }
 
   @override
@@ -63,9 +75,8 @@ class _SplashScreenState extends State<SplashScreen> {
                       quarterTurns: -2,
                       child: Image.asset(
                         'assets/text.png',
-                       height: 48,
+                        height: 48,
                       )),
-                     
                 ],
               ),
             ),

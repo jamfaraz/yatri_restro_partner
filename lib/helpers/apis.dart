@@ -1,75 +1,108 @@
 import 'dart:convert';
+import 'dart:developer';
 
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:yatri_restro/screens/auth/signin_screen.dart';
+import '../models/all_order_model.dart';
 
 class ApiHelper {
-  static Future<bool> login(
-      {required String email, required String password}) async {
-    final response = await http.post(
-      Uri.parse('https://api.yatrirestro.com/api/v1/admin/app/login'),
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode({
-        'email': email,
-        'password': password,
-      }),
-    );
-
-    if (response.statusCode == 200) {
-      // Handle successful response
-      return true;
-    } else {
-      // Handle error response
-      throw Exception('Failed to login');
-    }
+  Future<String?> getToken() async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    return prefs.getString('token');
   }
+//
 
-  static Future<void> signin(String email, String password) async {
-    final response = await http.post(
-      Uri.parse('https://api.yatrirestro.com/api/v1/admin/app/login'),
-      headers: <String, String>{
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(<String, String>{
-        'email': email,
-        'password': password,
-      }),
+// Future<List<AllOrderModel>> getAllOrders() async {
+//   String? token = await getToken();
+
+//   if (token == null) {
+//     print('Token is null. Cannot proceed with the request.');
+//     return [];
+//   }
+
+//   try {
+//     print('Token: $token');
+//     final headers = {
+//       'Authorization': 'Bearer $token',
+//       'Content-Type': 'application/json',
+//     };
+//     print('Headers: $headers');
+
+//     final response = await http.get(
+//         Uri.parse('https://api.yatrirestro.com/api/v1/partner/orders'),
+//         headers: headers);
+
+//     print('Response status: ${response.statusCode}');
+//     print('Response body: ${response.body}');
+
+//     if (response.statusCode == 200) {
+//       final responseBody = jsonDecode(response.body);
+//       log(response.body);
+
+//       final List<AllOrderModel> list = responseBody
+//           .map<AllOrderModel>((ship) => AllOrderModel.fromJson(ship))
+//           .toList();
+//       return list;
+//     } else {
+//       print('Failed to load orders. Status code: ${response.statusCode}');
+//       return [];
+//     }
+//   } catch (e) {
+//     print(e);
+//     return [];
+//   }
+// }
+ Future<List<AllOrderModel>> getAllOrders() async {
+  String? token = await getToken();
+  print('Token: $token');
+
+  if (token == null) {
+    print('Token is null. Cannot proceed with the request.');
+    return [];
+  }
+try {
+  
+  String url = 'https://api.yatrirestro.com/api/v1/partner/orders';
+  print('Request URL: $url');
+  final response = await http.get(Uri.parse(url), headers: {
+    'Authorization': 'Bearer $token',
+    'Content-Type': 'application/json',
+  });
+
+  if (response.statusCode == 200) {
+    final body = jsonDecode(response.body);
+
+    // Check the structure of the response
+    // print('Response body: $body');
+
+    // Assuming the response contains a field 'orders' that holds the list
+    final List<dynamic> ordersJson = body['orders'];
+    final List<AllOrderModel> orders = ordersJson.map((e) => AllOrderModel.fromJson(e)).toList();
+    print(orders);
+    return orders;
+
+  } else {
+    print('Failed to fetch orders');
+    throw Exception('Error fetching orders');
+  }
+  
+} catch (e) {
+  print(e);
+  return [];
+}
+}
+
+
+  //
+  //
+  static Future<void> logout(BuildContext context) async {
+    SharedPreferences prefs = await SharedPreferences.getInstance();
+    prefs.setBool('isLoggedIn', false);
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(builder: (context) => SignInScreen()),
     );
   }
-
-  // Future<List<Ship>> getOrders() async {
-  //   try {
-  //     final response =
-  //         await http.get(Uri.parse('$baseApiUrl/GetCruiseShips?dtDate=$date'));
-
-  //     final decodedResponse = jsonDecode(response.body);
-  //     log(response.body);
-  //     final List<Ship> list =
-  //         decodedResponse.map<Ship>((ship) => Ship.fromMap(ship)).toList();
-  //     return list;
-  //   } catch (e) {
-  //     print(e);
-  //     return [];
-  //   }
-  // }
-
-  static Future<bool> loginwithEmail(String email, String password) async {
-    final url = Uri.parse('https://api.yatrirestro.com/api/v1/admin/app/login');
-    final response = await http.post(
-      url,
-      // headers: {'Content-Type': 'application/json'},
-      body: jsonEncode({'email': email, 'password': password}),
-    );
-
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
-      // Assuming the API returns a success field to indicate successful login
-      return data['success'];
-    } else {
-      throw Exception('Failed to login');
-    }
-  }
-
 }

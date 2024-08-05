@@ -3,38 +3,12 @@ import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:yatri_restro/screens/dashboard/dashboard.dart';
 import 'package:http/http.dart' as http;
 
 class LoginControler extends GetxController {
   RxBool isLoading = false.obs;
-
-  // Future<void> log(
-  //   String email,
-  //   String password,
-  // ) async {
-  //   try {
-  //     isLoading.value = true;
-  //     await ApiHelper.logInService(email: email, password: password);
-  //     Get.snackbar(
-  //       'Success',
-  //       'Login Successful',
-  //       backgroundColor: Colors.green,
-  //       colorText: Colors.white,
-  //     );
-  //     isLoading.value = false;
-  //     Get.offAll(const Dashboard());
-  //   } catch (e) {
-  //     isLoading.value = false;
-
-  //     Get.snackbar(
-  //       'Error',
-  //       'Failed to login',
-  //       backgroundColor: Colors.green,
-  //       colorText: Colors.white,
-  //     );
-  //   }
-  // }
 
   Future<void> logInService(
       {required String email, required String password}) async {
@@ -51,9 +25,13 @@ class LoginControler extends GetxController {
       );
 
       if (response.statusCode == 200) {
-        final Map<String, dynamic> responseBody = jsonDecode(response.body);
+        final data = jsonDecode(response.body);
+        SharedPreferences prefs = await SharedPreferences.getInstance();
 
-        // LoginModel responseModel = LoginModel.fromJson(responseBody);
+        final token = data['token'];
+        await prefs.setString('token', token);
+        prefs.setBool('isLoggedIn', true);
+
         Get.snackbar(
           'Success',
           'login successfully',
@@ -61,9 +39,8 @@ class LoginControler extends GetxController {
           colorText: Colors.white,
         );
 
-        Get.to(() => Dashboard());
-        // log(responseModel.toString());
-        // return responseModel;
+        Get.to(() => const Dashboard());
+
         isLoading.value = false;
       } else {
         isLoading.value = false;
@@ -73,8 +50,12 @@ class LoginControler extends GetxController {
     } catch (e) {
       // Get.snackbar('Error', e.toString());
       isLoading.value = false;
-      Get.snackbar('Error', 'Invalid credentials',   backgroundColor: Colors.green,
-          colorText: Colors.white,);
+      Get.snackbar(
+        'Error',
+        'Invalid credentials',
+        backgroundColor: Colors.green,
+        colorText: Colors.white,
+      );
 
       log('Error: $e');
       rethrow;

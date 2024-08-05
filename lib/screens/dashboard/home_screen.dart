@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:yatri_restro/helpers/apis.dart';
+import 'package:yatri_restro/models/all_order_model.dart';
 import 'package:yatri_restro/screens/dashboard/notification_screen.dart';
 import 'package:yatri_restro/screens/dashboard/order_detail_screen.dart';
 import 'package:yatri_restro/widgets/forward_button.dart';
 
+import '../../controllers/all_order_controller.dart';
 import '../../widgets/drawer_widget.dart';
 import '../../widgets/tabbar_item.dart';
 
@@ -17,6 +20,11 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
+  Future<List<AllOrderModel>>? futureOrders;
+
+  AllOrderController allOrderController = Get.put(AllOrderController());
+  ApiHelper apiHelper = ApiHelper();
+
   late TabController tabController;
 
   @override
@@ -26,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
     tabController.addListener(() {
       setState(() {});
     });
+    // allOrderController.fetchOrders();
   }
 
   @override
@@ -168,177 +177,206 @@ class _HomeScreenState extends State<HomeScreen> with TickerProviderStateMixin {
                 ]),
             Expanded(
               child: TabBarView(controller: tabController, children: [
-                ListView.builder(
-                  padding: const EdgeInsets.only(top: 6),
-                  shrinkWrap: true,
-                  physics: const BouncingScrollPhysics(),
-                  itemCount: 6,
-                  itemBuilder: (context, index) {
-                    return Column(
-                      children: [
-                        Container(
-                          margin: const EdgeInsets.symmetric(vertical: 6),
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 12),
-                          decoration: ShapeDecoration(
-                            color: const Color(0xFFEFEFEF),
-                            shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(4)),
-                          ),
-                          child: Column(
-                            children: [
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Container(
-                                    height: Get.height * .021,
-                                    // width: Get.width*.4,
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 4),
-                                    decoration: ShapeDecoration(
-                                      color: const Color(0xFF08445C),
-                                      shape: RoundedRectangleBorder(
-                                          borderRadius:
-                                              BorderRadius.circular(3)),
-                                    ),
-                                    child: Text(
-                                      'Order id- #12345678',
-                                      style: GoogleFonts.kameron(
-                                        textStyle: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 13,
-                                          fontWeight: FontWeight.w700,
-                                        ),
-                                      ),
-                                    ),
+                FutureBuilder<List<AllOrderModel>>(
+                    future: apiHelper.getAllOrders(),
+                    builder: (BuildContext context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return const Center(child: CircularProgressIndicator());
+                      }else {
+                        
+                        return ListView.builder(
+                          padding: const EdgeInsets.only(top: 6),
+                          shrinkWrap: true,
+                          physics: const BouncingScrollPhysics(),
+                          itemCount: snapshot.data?.length,
+                          itemBuilder: (context, index) {
+                            AllOrderModel? order = snapshot.data?[index];
+
+                            return Column(
+                              children: [
+
+                                // Text(snapshot.data?.length.toString()??''),
+                                Container(
+                                  margin:
+                                      const EdgeInsets.symmetric(vertical: 6),
+                                  padding: const EdgeInsets.symmetric(
+                                      horizontal: 8, vertical: 12),
+                                  decoration: ShapeDecoration(
+                                    color: const Color(0xFFEFEFEF),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(4)),
                                   ),
-                                  Column(
+                                  child: Column(
                                     children: [
-                                      Text(
-                                        'Arrival time',
-                                        style: GoogleFonts.kameron(
-                                          textStyle: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      ),
-                                      Text(
-                                        '07:35 PM',
-                                        style: GoogleFonts.kameron(
-                                          textStyle: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 10,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                              Row(
-                                children: [
-                                  Text(
-                                    'Train no/Name-    ',
-                                    style: GoogleFonts.kameron(
-                                      textStyle: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ),
-                                  Text(
-                                    '02018- DEHRADUN SHT SPL',
-                                    style: GoogleFonts.kameron(
-                                      textStyle: const TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w400,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Text(
-                                        'Total amount-    ',
-                                        style: GoogleFonts.kameron(
-                                          textStyle: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 13,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      ),
-                                      Text(
-                                        '350/-',
-                                        style: GoogleFonts.kameron(
-                                          textStyle: const TextStyle(
-                                            color: Colors.black,
-                                            fontSize: 12,
-                                            fontWeight: FontWeight.w400,
-                                          ),
-                                        ),
-                                      ),
-                                      const SizedBox(
-                                        width: 14,
-                                      ),
-                                      Container(
-                                        width: Get.width * .16,
-                                        height: Get.height * .024,
-                                        decoration: ShapeDecoration(
-                                          color: const Color(0xFFB65426),
-                                          shape: RoundedRectangleBorder(
-                                              borderRadius:
-                                                  BorderRadius.circular(7)),
-                                        ),
-                                        child: Center(
-                                          child: Text(
-                                            'COD',
-                                            style: GoogleFonts.kameron(
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Container(
+                                            height: Get.height * .021,
+                                            // width: Get.width*.4,
+                                            padding: const EdgeInsets.symmetric(
+                                                horizontal: 4),
+                                            decoration: ShapeDecoration(
+                                              color: const Color(0xFF08445C),
+                                              shape: RoundedRectangleBorder(
+                                                  borderRadius:
+                                                      BorderRadius.circular(3)),
+                                            ),
+                                            child: Text(
+                                              'Order id- ${order?.status ?? ''}',
+                                              style: GoogleFonts.kameron(
                                                 textStyle: const TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 13,
-                                              fontWeight: FontWeight.w700,
-                                            )),
+                                                  color: Colors.white,
+                                                  fontSize: 13,
+                                                  fontWeight: FontWeight.w700,
+                                                ),
+                                              ),
+                                            ),
                                           ),
-                                        ),
+                                          Column(
+                                            children: [
+                                              Text(
+                                                'Arrival time',
+                                                style: GoogleFonts.kameron(
+                                                  textStyle: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                ),
+                                              ),
+                                              Text(
+                                                order?.status
+                                                        .toString() ??
+                                                    '',
+                                                style: GoogleFonts.kameron(
+                                                  textStyle: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 10,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          )
+                                        ],
                                       ),
+                                      Row(
+                                        children: [
+                                          Text(
+                                            'Train no/Name-    ',
+                                            style: GoogleFonts.kameron(
+                                              textStyle: const TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 13,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ),
+                                          Text(
+                                            order?.status.toString() ?? '',
+                                            style: GoogleFonts.kameron(
+                                              textStyle: const TextStyle(
+                                                color: Colors.black,
+                                                fontSize: 12,
+                                                fontWeight: FontWeight.w400,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Row(
+                                            children: [
+                                              Text(
+                                                'Total amount-    ',
+                                                style: GoogleFonts.kameron(
+                                                  textStyle: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 13,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                ),
+                                              ),
+                                              Text(
+                                                order?.mobile.toString() ?? '',
+                                                style: GoogleFonts.kameron(
+                                                  textStyle: const TextStyle(
+                                                    color: Colors.black,
+                                                    fontSize: 12,
+                                                    fontWeight: FontWeight.w400,
+                                                  ),
+                                                ),
+                                              ),
+                                              const SizedBox(
+                                                width: 14,
+                                              ),
+                                              Container(
+                                                width: Get.width * .16,
+                                                height: Get.height * .024,
+                                                decoration: ShapeDecoration(
+                                                  color:
+                                                      const Color(0xFFB65426),
+                                                  shape: RoundedRectangleBorder(
+                                                      borderRadius:
+                                                          BorderRadius.circular(
+                                                              7)),
+                                                ),
+                                                child: Center(
+                                                  child: Text(
+                                                    'COD',
+                                                    style: GoogleFonts.kameron(
+                                                        textStyle:
+                                                            const TextStyle(
+                                                      color: Colors.white,
+                                                      fontSize: 13,
+                                                      fontWeight:
+                                                          FontWeight.w700,
+                                                    )),
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                          ForwardButton(
+                                            onTap: () {
+                                              Get.to(() =>
+                                                  const OrderDetailScreen());
+                                            },
+                                          )
+                                        ],
+                                      )
                                     ],
                                   ),
-                                  ForwardButton(
-                                    onTap: () {
-                                      Get.to(() => const OrderDetailScreen());
-                                    },
-                                  )
-                                ],
-                              )
-                            ],
-                          ),
-                        ),
-                      ],
-                    );
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    }),
+
+                InkWell(
+                  onTap: () {
+                    // apiHelper.getAllOrders();
                   },
-                ),
-                Center(
-                  child: Text(
-                    'There is no delivered order yet',
-                    style: GoogleFonts.kameron(
-                        textStyle: const TextStyle(
-                            color: Color(0xFF08445C),
-                            fontSize: 17,
-                            fontWeight: FontWeight.w500)),
+                  child: Center(
+                    child: Text(
+                      'There is no delivered order yet',
+                      style: GoogleFonts.kameron(
+                          textStyle: const TextStyle(
+                              color: Color(0xFF08445C),
+                              fontSize: 17,
+                              fontWeight: FontWeight.w500)),
+                    ),
                   ),
                 ),
+
+               
                 Center(
                   child: Text(
                     'There is no cancelled order yet',

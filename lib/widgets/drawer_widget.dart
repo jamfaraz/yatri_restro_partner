@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:get/get_core/get_core.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:yatri_restro/screens/auth/signin_screen.dart';
+import 'package:yatri_restro/helpers/apis.dart';
 import 'package:yatri_restro/screens/dashboard/delivery_setting_screen.dart';
 
 import 'forward_button.dart';
@@ -204,7 +203,42 @@ class DrawerWidget extends StatelessWidget {
               onTap: () {},
             ),
             onTap: () {
-              Get.offAll(() => const SignInScreen());
+                  showDialog(
+                  context: context,
+                  builder: (context) => AlertDialog(
+                        title:  Text(
+                          "Are you sure?",
+                          style: GoogleFonts.kameron(textStyle: const TextStyle(
+                            
+                              fontSize: 18, fontWeight: FontWeight.w500),
+                        ),),
+                        content:  Text(
+                            "Click Confirm if you want to Log out of the app",
+                            style: GoogleFonts.kameron(textStyle: const TextStyle(
+                              fontSize: 14,
+                            )),),
+                        actions: [
+                          TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child:  Text("Cancel",style: 
+                              GoogleFonts.kameron(textStyle: const TextStyle())
+                              )),
+                          TextButton(
+                              onPressed: () {
+                                ApiHelper.logout(context);
+
+                                Navigator.pop(context);
+                              },
+                              child:  Text(
+                                "Confirm",
+                                style: 
+                              GoogleFonts.kameron(textStyle: const TextStyle(
+                               color: Colors.red),
+                              )))
+                        ],
+                      ));
             },
           ),
         ],
